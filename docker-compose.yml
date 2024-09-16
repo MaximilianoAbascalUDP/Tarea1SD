@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  grpc_server:
+    build:
+      context: ./grpc_server
+    ports:
+      - "50051:50051"
+    networks:
+      - my_network
+
+  client_api:
+    build:
+      context: ./client_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - grpc_server
+    networks:
+      - my_network
+
+  dns_generator:
+    build:
+      context: ./dns_generator
+    depends_on:
+      - grpc_server
+    networks:
+      - my_network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
